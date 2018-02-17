@@ -34,7 +34,7 @@ func main() {
 
 	credentials, err := authClient.RequestCredential(body)
 	if err != nil {
-		println(fmt.Errorf("ERROR: %v", err))
+		println(err.Error())
 		os.Exit(1)
 	}
 	fmt.Printf("Consumer Key (CK): %s\n", credentials.ConsumerKey)

@@ -111,9 +111,11 @@ func (c *Client) do(req *http.Request) ([]byte, error) {
 	req.Header.Add("Content-type", "application/json")
 	if c.Keyring != nil {
 		// if application key add header X-Ovh-Application
-		if c.Keyring.AK != "" && c.Keyring.AS != "" && c.Keyring.CK != "" {
-			timestamp := fmt.Sprintf("%d", int32(time.Now().Unix()))
+		if c.Keyring.AK != "" {
 			req.Header.Add("X-Ovh-Application", c.Keyring.AK)
+		}
+		if c.Keyring.AS != "" && c.Keyring.CK != "" {
+			timestamp := fmt.Sprintf("%d", int32(time.Now().Unix()))
 			req.Header.Add("X-Ovh-Timestamp", timestamp)
 			req.Header.Add("X-Ovh-Consumer", c.Keyring.CK)
 			query := strings.Split(req.URL.String(), "?")[0]
@@ -123,6 +125,7 @@ func (c *Client) do(req *http.Request) ([]byte, error) {
 				if err != nil {
 					return nil, err
 				}
+				req.Body = ioutil.NopCloser(bytes.NewBuffer(payload))
 			}
 			h := sha1.New()
 			toSign := fmt.Sprintf("%s+%s+%s+%s+%s+%s", c.Keyring.AS, c.Keyring.CK, req.Method, query, string(payload), timestamp)
