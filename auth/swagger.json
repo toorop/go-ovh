@@ -1,0 +1,186 @@
+swagger: "2.0"
+info:
+  title: OVH API - Auth
+  description: OVH API - Auth
+  version: 1.0.0
+  contact:
+    name: OVH API EU
+    url: https://eu.api.ovh.com/
+    email: api-subscribe@ml.ovh.net
+  license:
+    name: © OVH SAS
+    url: https://eu.api.ovh.com/
+host: eu.api.ovh.com
+basePath: /1.0
+schemes:
+- https
+consumes:
+- application/json
+produces:
+- application/json
+externalDocs:
+  url: https://eu.api.ovh.com/
+  description: Online version
+securityDefinitions:
+  ApiKeyAuth:
+    type: apiKey
+    name: X-Ovh-Consumer
+    in: header
+paths:
+  /auth/credential:
+    post:
+      summary: Request a new credential for your application
+      description: PRODUCTION
+      parameters:
+      - name: authCredentialPost
+        in: body
+        schema:
+          type: object
+          required:
+          - accessRules
+          properties:
+            accessRules:
+              type: array
+              items:
+                $ref: '#/definitions/auth.AccessRule'
+            redirection:
+              type: string
+      responses:
+        "200":
+          $ref: '#/responses/auth.Credential'
+        default:
+          $ref: '#/responses/OVH.Error'
+  /auth/currentCredential:
+    get:
+      summary: Get the current credential details
+      description: PRODUCTION - authentication required
+      responses:
+        "200":
+          $ref: '#/responses/api.Credential'
+        default:
+          $ref: '#/responses/OVH.Error'
+      security:
+      - ApiKeyAuth: []
+  /auth/logout:
+    post:
+      summary: Expire current credential
+      description: PRODUCTION - authentication required
+      responses:
+        "200":
+          description: return 'void'
+        default:
+          $ref: '#/responses/OVH.Error'
+      security:
+      - ApiKeyAuth: []
+  /auth/time:
+    get:
+      summary: Get the current time of the OVH servers, since UNIX epoch
+      description: PRODUCTION
+      responses:
+        "200":
+          description: return value
+          schema:
+            type: integer
+            format: int64
+        default:
+          $ref: '#/responses/OVH.Error'
+definitions:
+  api.Credential:
+    description: API Credential
+    type: object
+    required:
+    - status
+    - applicationId
+    - credentialId
+    - rules
+    - creation
+    - ovhSupport
+    properties:
+      applicationId:
+        type: integer
+        format: int64
+        readOnly: true
+      creation:
+        type: string
+        format: date-time
+        readOnly: true
+      credentialId:
+        type: integer
+        format: int64
+        readOnly: true
+      expiration:
+        type: string
+        format: date-time
+        readOnly: true
+      lastUse:
+        type: string
+        format: date-time
+        readOnly: true
+      ovhSupport:
+        description: States whether this credential has been created by yourself or
+          by the OVH support team
+        type: boolean
+        readOnly: true
+      rules:
+        type: array
+        readOnly: true
+        items:
+          $ref: '#/definitions/auth.AccessRule'
+      status:
+        type: string
+        readOnly: true
+        enum:
+        - expired
+        - pendingValidation
+        - refused
+        - validated
+  auth.AccessRule:
+    description: Access rule required for the application
+    type: object
+    properties:
+      method:
+        type: string
+        enum:
+        - DELETE
+        - GET
+        - POST
+        - PUT
+      path:
+        type: string
+  auth.Credential:
+    description: Credential request to get access to the API
+    type: object
+    properties:
+      consumerKey:
+        type: string
+      state:
+        type: string
+        enum:
+        - expired
+        - pendingValidation
+        - refused
+        - validated
+      validationUrl:
+        type: string
+responses:
+  OVH.Error:
+    description: Unexpected error
+    schema:
+      type: object
+      properties:
+        errorCode:
+          type: integer
+          format: int32
+        httpCode:
+          type: integer
+          format: int32
+        message:
+          type: string
+  api.Credential:
+    description: description of 'api.Credential' response
+    schema:
+      $ref: '#/definitions/api.Credential'
+  auth.Credential:
+    description: description of 'auth.Credential' response
+    schema:
+      $ref: '#/definitions/auth.Credential'
