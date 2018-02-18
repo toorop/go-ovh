@@ -15,17 +15,27 @@ import (
 )
 
 const (
-	Version      = "1.0"
-	OvhEU        = "https://eu.api.ovh.com/1.0"
-	OvhCA        = "https://ca.api.ovh.com/1.0"
-	OvhUS        = "https://api.ovh.us/1.0"
-	KimsufiEU    = "https://eu.api.kimsufi.com/1.0"
-	KimsufiCA    = "https://ca.api.kimsufi.com/1.0"
+	// Version API version
+	Version = "1.0"
+	// OvhEU for OVH EU
+	OvhEU = "https://eu.api.ovh.com/1.0"
+	// OvhCA for OVH CA
+	OvhCA = "https://ca.api.ovh.com/1.0"
+	// OvhUS for OVH US
+	OvhUS = "https://api.ovh.us/1.0"
+	// KimsufiEU for Kimsufi EU
+	KimsufiEU = "https://eu.api.kimsufi.com/1.0"
+	// KimsufiCA for Kimsufi CA
+	KimsufiCA = "https://ca.api.kimsufi.com/1.0"
+	// SoyoustartEU for SoYouStart EU
 	SoyoustartEU = "https://eu.api.soyoustart.com/1.0"
+	// SoyoustartCA for SoYouStart CA
 	SoyoustartCA = "https://ca.api.soyoustart.com/1.0"
-	RunaboveCA   = "https://api.runabove.com/1.0"
+	// Runabove is for runabove
+	Runabove = "https://api.runabove.com/1.0"
 )
 
+// Endpoints map name -> endpoint
 var Endpoints = map[string]string{
 	"ovh-eu":        OvhEU,
 	"ovh-ca":        OvhCA,
@@ -34,7 +44,7 @@ var Endpoints = map[string]string{
 	"kimsufi-ca":    KimsufiCA,
 	"soyoustart-eu": SoyoustartEU,
 	"soyoustart-ca": SoyoustartCA,
-	"runabove-ca":   RunaboveCA,
+	"runabove":      Runabove,
 }
 
 // Client is an HTTP client wrapper for OVH API
