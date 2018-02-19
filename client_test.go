@@ -1,6 +1,7 @@
 package ovh
 
 import (
+	"bytes"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -33,7 +34,7 @@ func TestGET(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, "HELLO")
 	}))
-	body, err := NewClient("ovh-eu").WithEndpoint(ts.URL).GET("/foo")
+	body, err := NewClient("ovh-eu").WithKeyring("AK", "AS", "CK").WithEndpoint(ts.URL).GET("/foo")
 	assert.NoError(t, err)
 	assert.Equal(t, []byte("HELLO\n"), body)
 }
@@ -45,7 +46,17 @@ func TestPOST(t *testing.T) {
 		defer r.Body.Close()
 		fmt.Fprintln(w, string(body))
 	}))
-	body, err := NewClient("ovh-eu").WithEndpoint(ts.URL).POST("/foo", []byte("HELLO"))
+	body, err := NewClient("ovh-eu").WithEndpoint(ts.URL).WithKeyring("AK", "AS", "CK").POST("/foo", []byte("HELLO"))
 	assert.NoError(t, err)
 	assert.Equal(t, []byte("HELLO\n"), body)
+}
+
+// Test signature
+func TestSignRequest(t *testing.T) {
+	client := NewClient("ovh-eu").WithKeyring("AK", "AS", "CK")
+	req, err := http.NewRequest("POST", "/foo", bytes.NewBuffer([]byte("HELLO")))
+	assert.NoError(t, err)
+	err = client.signRequest(req, "1519037341")
+	assert.NoError(t, err)
+	assert.Equal(t, "$1$80243b2c1b7bc25bb58e339e8c87cc2c18ba651c", req.Header.Get("X-Ovh-Signature"))
 }

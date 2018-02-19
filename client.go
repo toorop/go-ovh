@@ -128,19 +128,9 @@ func (c *Client) do(req *http.Request) ([]byte, error) {
 			timestamp := fmt.Sprintf("%d", int32(time.Now().Unix()))
 			req.Header.Add("X-Ovh-Timestamp", timestamp)
 			req.Header.Add("X-Ovh-Consumer", c.Keyring.CK)
-			query := strings.Split(req.URL.String(), "?")[0]
-			payload := []byte{}
-			if req.Body != nil {
-				payload, err = ioutil.ReadAll(req.Body)
-				if err != nil {
-					return nil, err
-				}
-				req.Body = ioutil.NopCloser(bytes.NewBuffer(payload))
+			if err = c.signRequest(req); err != nil {
+				return nil, err
 			}
-			h := sha1.New()
-			toSign := fmt.Sprintf("%s+%s+%s+%s+%s+%s", c.Keyring.AS, c.Keyring.CK, req.Method, query, string(payload), timestamp)
-			h.Write([]byte(toSign))
-			req.Header.Add("X-Ovh-Signature", fmt.Sprintf("$1$%x", h.Sum(nil)))
 		}
 	}
 
@@ -167,4 +157,30 @@ func (c *Client) do(req *http.Request) ([]byte, error) {
 		return nil, fmt.Errorf("HTTP status code: %d - Error code: %d : %s", apiErr.HTTPCode, apiErr.ErrorCode, apiErr.Message)
 	}
 	return body, nil
+}
+
+// Timestamp parameter is here for testing purpose (mock current time)
+func (c *Client) signRequest(req *http.Request, timestampIn ...string) error {
+	var err error
+	var timestamp string
+	if len(timestampIn) < 1 {
+		timestamp = fmt.Sprintf("%d", int32(time.Now().Unix()))
+	} else {
+		timestamp = timestampIn[0]
+	}
+	query := strings.Split(req.URL.String(), "?")[0]
+	payload := []byte{}
+	if req.Body != nil {
+		payload, err = ioutil.ReadAll(req.Body)
+		if err != nil {
+			return err
+		}
+		req.Body = ioutil.NopCloser(bytes.NewBuffer(payload))
+	}
+	h := sha1.New()
+	toSign := fmt.Sprintf("%s+%s+%s+%s+%s+%s", c.Keyring.AS, c.Keyring.CK, req.Method, query, string(payload), timestamp)
+	h.Write([]byte(toSign))
+	req.Header.Add("X-Ovh-Signature", fmt.Sprintf("$1$%x", h.Sum(nil)))
+	return nil
+
 }
