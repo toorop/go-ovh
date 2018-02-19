@@ -89,12 +89,12 @@ definitions:
     description: API Credential
     type: object
     required:
+    - credentialId
+    - rules
     - creation
     - ovhSupport
     - status
     - applicationId
-    - credentialId
-    - rules
     properties:
       applicationId:
         type: integer

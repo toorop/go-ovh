@@ -10,13 +10,8 @@ import (
 )
 
 func main() {
-	// Get AK & CK from env
-	if len(os.Args) != 2 {
-		fmt.Println("Usage: getck Application_Key")
-		os.Exit(1)
-	}
-	ak := os.Args[1]
-	authClient := auth.New(ovh.NewClient("ovh-eu").WithKeyring(ak, "", ""))
+
+	authClient := auth.New(ovh.NewClient("ovh-eu").WithKeyringFromEnv())
 
 	// Define access rules
 	accessRules := authswag.PostAuthCredentialParamsBodyAccessRules{}
@@ -26,7 +21,17 @@ func main() {
 	// Methods: all
 	accessRules = append(accessRules, &authswag.AuthAccessRule{
 		Method: "GET",
-		Path:   "/me/*",
+		Path:   "/domain/*",
+	})
+
+	accessRules = append(accessRules, &authswag.AuthAccessRule{
+		Method: "POST",
+		Path:   "/domain/*",
+	})
+
+	accessRules = append(accessRules, &authswag.AuthAccessRule{
+		Method: "PUT",
+		Path:   "/domain/*",
 	})
 
 	body := authswag.PostAuthCredentialParamsBody{
