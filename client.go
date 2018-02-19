@@ -150,11 +150,14 @@ func (c *Client) do(req *http.Request) ([]byte, error) {
 	// Bad status ?
 	if r.StatusCode >= 400 {
 		apiErr := new(common.APIError)
-		err = json.Unmarshal(body, apiErr)
-		if apiErr.HTTPCode == 0 {
-			apiErr.HTTPCode = int32(r.StatusCode)
+		if len(body) != 0 {
+			err = json.Unmarshal(body, apiErr)
+			if apiErr.HTTPCode == 0 {
+				apiErr.HTTPCode = int32(r.StatusCode)
+			}
+			return nil, fmt.Errorf("HTTP status code: %d - Error code: %d : %s", apiErr.HTTPCode, apiErr.ErrorCode, apiErr.Message)
 		}
-		return nil, fmt.Errorf("HTTP status code: %d - Error code: %d : %s", apiErr.HTTPCode, apiErr.ErrorCode, apiErr.Message)
+		return nil, fmt.Errorf("HTTP status code: %d - Error code: %d : %s", r.StatusCode, 0, r.Status)
 	}
 	return body, nil
 }
