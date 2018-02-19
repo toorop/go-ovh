@@ -38,7 +38,7 @@ func (d *Domain) GetDomains(whoisOwner string) ([]string, error) {
 
 // GetZones retuns zones handled by OVH NS
 func (d *Domain) GetZones() ([]string, error) {
-	body, err := d.GET("/zones")
+	body, err := d.GET("/domain/zone")
 	if err != nil {
 		return nil, err
 	}
@@ -50,7 +50,10 @@ func (d *Domain) GetZones() ([]string, error) {
 
 // GetZone return zone info
 func (d *Domain) GetZone(zone string) (*domainswag.DomainZoneZone, error) {
-	body, err := d.GET("/zone/" + url.QueryEscape(zone))
+	body, err := d.GET("/domain/zone/" + url.QueryEscape(zone))
+	if err != nil {
+		return nil, err
+	}
 	var z domainswag.DomainZoneZone
 	err = z.UnmarshalBinary(body)
 	return &z, err
