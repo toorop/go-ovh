@@ -9,20 +9,21 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	ovh "github.com/toorop/go-ovh"
+	"github.com/toorop/go-ovh/auth/authswag"
 )
 
 func TestRequestCredential(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, `{"consumerKey":"Ck","state":"expired","validationUrl":"https://api"}`)
 	}))
-	accessRules := PostAuthCredentialParamsBodyAccessRules{
-		&AuthAccessRule{
+	accessRules := authswag.PostAuthCredentialParamsBodyAccessRules{
+		&authswag.AuthAccessRule{
 			Method: "GET",
 			Path:   "/me/*",
 		},
 	}
 
-	body := PostAuthCredentialParamsBody{
+	body := authswag.PostAuthCredentialParamsBody{
 		AccessRules: accessRules,
 	}
 

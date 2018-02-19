@@ -6,6 +6,7 @@ import (
 
 	ovh "github.com/toorop/go-ovh"
 	"github.com/toorop/go-ovh/auth"
+	"github.com/toorop/go-ovh/auth/authswag"
 )
 
 func main() {
@@ -18,17 +19,17 @@ func main() {
 	authClient := auth.New(ovh.NewClient("ovh-eu").WithKeyring(ak, "", ""))
 
 	// Define access rules
-	accessRules := auth.PostAuthCredentialParamsBodyAccessRules{}
+	accessRules := authswag.PostAuthCredentialParamsBodyAccessRules{}
 
 	// Access rule 1
 	// Ressource /me
 	// Methods: all
-	accessRules = append(accessRules, &auth.AuthAccessRule{
+	accessRules = append(accessRules, &authswag.AuthAccessRule{
 		Method: "GET",
 		Path:   "/me/*",
 	})
 
-	body := auth.PostAuthCredentialParamsBody{
+	body := authswag.PostAuthCredentialParamsBody{
 		AccessRules: accessRules,
 	}
 

@@ -4,7 +4,7 @@ info:
   description: OVH API - Auth
   version: 1.0.0
   contact:
-    name: OVH API EU
+    name: OVH
     url: https://eu.api.ovh.com/
     email: api-subscribe@ml.ovh.net
   license:
@@ -89,12 +89,12 @@ definitions:
     description: API Credential
     type: object
     required:
+    - creation
+    - ovhSupport
     - status
     - applicationId
     - credentialId
     - rules
-    - creation
-    - ovhSupport
     properties:
       applicationId:
         type: integer

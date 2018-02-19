@@ -6,6 +6,7 @@ import (
 	"time"
 
 	ovh "github.com/toorop/go-ovh"
+	"github.com/toorop/go-ovh/auth/authswag"
 )
 
 // Auth wrap /auth
@@ -21,7 +22,7 @@ func New(client *ovh.Client) *Auth {
 }
 
 // RequestCredential return  PostAuthCredentialParamsBodyAccessRules
-func (a *Auth) RequestCredential(params PostAuthCredentialParamsBody) (*AuthCredential, error) {
+func (a *Auth) RequestCredential(params authswag.PostAuthCredentialParamsBody) (*authswag.AuthCredential, error) {
 	data, err := params.MarshalBinary()
 	if err != nil {
 		return nil, err
@@ -30,18 +31,18 @@ func (a *Auth) RequestCredential(params PostAuthCredentialParamsBody) (*AuthCred
 	if err != nil {
 		return nil, err
 	}
-	authCredential := new(AuthCredential)
+	authCredential := new(authswag.AuthCredential)
 	err = authCredential.UnmarshalBinary(body)
 	return authCredential, err
 }
 
 // GetCurrentCredential return current credential
-func (a *Auth) GetCurrentCredential() (*APICredential, error) {
+func (a *Auth) GetCurrentCredential() (*authswag.APICredential, error) {
 	body, err := a.GET("/auth/currentCredential")
 	if err != nil {
 		return nil, err
 	}
-	credential := new(APICredential)
+	credential := new(authswag.APICredential)
 	err = credential.UnmarshalBinary(body)
 	return credential, err
 }
